@@ -52,3 +52,72 @@ fn main() {
   - Ownership ensures memory safety by tracking who "owns" data.
   - Moves transfer ownership; copies duplicate stack data.
   - Rust’s compiler enforces these rules at compile time, preventing bugs like use-after-free.
+
+
+  ## Borrowing
+
+  Borrowing lets us use a value without taking the ownership instead of moving data, create a reference to it
+
+  ## Rust Borrowing Rules
+
+  - You can have any number of immutable references (&T) to a value.
+  - You can have only one mutable reference (&mut T) at a time.
+  - You cannot have mutable and immutable references to the same value simultaneously.
+  - References must always be valid (no dangling pointers).
+
+
+## Immutable Borrowing
+  
+  Allow read-only access
+
+  ```rust 
+  fn main() {
+      let s = String::from("hello");
+      let r1 = &s;
+      let r2 = &s; // this is allowed
+      println!("r1: {}, r2: {}", r1, r2); // Works
+  }
+  ```
+## Mutable Borrowing
+
+Mutable references (&mut T) allow modifying the data, but only one mutable reference can exist at a time.
+
+```rust
+fn main() {
+    let mut s = String::from("hello");
+    let r1 = &mut s;
+    r1.push_str(", world!");
+    println!("{}",r1);
+    // let r2 = &mut s; // Error: cannot have another mutable borrow
+}
+```
+
+## Mixing Immutable and Mutable Borrows
+
+Can't Have an immutable borrow and a mutable borrow active at the same time
+
+```rust
+fn i_and_m_borrow(){
+    let mut s = String::from("hello");
+    let r1 = &s;
+    let r2 = &mut s; //ERROR :: cannot borrow `s` as mutable because it is also borrowed as immutable
+    println!("{}",r1);
+}
+```
+
+## Scope of Borrows
+
+Borrows are tied to their scope. Once a borrow’s scope ends, you can create new borrows.
+
+```rust
+fn scopes_of_borrows(){
+    let mut s = String::from("hello");
+    {
+        let r1 = &mut s;
+        r1.push_str(", world!");
+    }
+    let r2 = &mut s;
+    r2.push_str("!!");
+    println!("{}",r2);
+}
+```
